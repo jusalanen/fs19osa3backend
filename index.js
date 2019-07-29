@@ -1,28 +1,31 @@
 const express = require('express')
 const app = express()
+const bodyParser = require('body-parser')
 
 let persons =  [
-    {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": 1
-    },
-    {
-      "name": "Ada Lovelace",
-      "number": "39-44-5323523",
-      "id": 2
-    },
-    {
-      "name": "Dan Abramov",
-      "number": "12-43-234345",
-      "id": 3
-    },
-    {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    }
-  ]
+  {
+    "name": "Arto Hellas",
+    "number": "040-123456",
+    "id": 1
+  },
+  {
+   "name": "Ada Lovelace",
+    "number": "39-44-5323523",
+    "id": 2
+  },
+  {
+    "name": "Dan Abramov",
+    "number": "12-43-234345",
+    "id": 3
+  },
+  {
+    "name": "Mary Poppendieck",
+    "number": "39-23-6423122",
+    "id": 4
+  }
+]
+
+app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
@@ -40,6 +43,14 @@ app.get('/api/persons/:id', (req, res) => {
   } else {
     res.status(404).end()
   }
+})
+
+app.post('/api/persons', (req, res) =>{
+  const person = req.body
+  console.log(person)
+  const newId = Math.floor(Math.random() * 9999999 + 10)
+  person.id = newId
+  res.json(person)
 })
 
 app.delete('/api/persons/:id', (req, res) => {

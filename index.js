@@ -46,11 +46,22 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) =>{
+  if (req.body.name === undefined || req.body.number === undefined) {
+    return res.status(400),json({ error: 'content missing'})
+  }
+  console.log(req.body)
   const person = req.body
-  console.log(person)
+  if (person.name === '' || person.number === '') {
+    return res.status(400),json({ error: 'name or number missing'})
+  }
+  const p = persons.find(p => p.name === person.name)
+  if (p) {
+      return res.status(400).json({ error: 'name must be unique'})
+  }
   const newId = Math.floor(Math.random() * 9999999 + 10)
   person.id = newId
-  res.json(person)
+  persons.concat(person)
+  res.status(201).json(person)
 })
 
 app.delete('/api/persons/:id', (req, res) => {

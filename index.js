@@ -27,7 +27,30 @@ let persons =  [
 ]
 
 app.use(bodyParser.json())
-app.use(morgan('tiny'))
+//app.use(morgan('tiny'))
+
+morgan.token('body', (req, res) => {
+  if (req.body.name !== undefined && req.body.number !== undefined) {
+    const name = JSON.stringify(req.body.name)
+    const number = JSON.stringify(req.body.number)
+    const body ='{"name":' + name + ',"number":' + number + '}'
+    return body
+  }
+//  return JSON.stringify(req.body) tulostaa myös id
+})
+
+const custMorgan = morgan( (tokens, req, res) =>{
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms',
+    tokens['body'](req,res),
+  ].join(' ')
+})
+
+app.use(custMorgan)
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
@@ -51,7 +74,7 @@ app.post('/api/persons', (req, res) =>{
   if (req.body.name === undefined || req.body.number === undefined) {
     return res.status(400),json({ error: 'content missing'})
   }
-  console.log(req.body)
+  //console.log(req.body)
   const person = req.body
   if (person.name === '' || person.number === '') {
     return res.status(400),json({ error: 'name or number missing'})

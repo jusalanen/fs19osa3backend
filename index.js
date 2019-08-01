@@ -66,10 +66,10 @@ app.get('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) =>{
   if (req.body.name === undefined || req.body.number === undefined) {
-    return res.status(400),json({ error: 'content missing'})
+    return res.status(400).json({ error: 'content missing'})
   }
   if (req.body.name === '' || req.body.number === '') {
-    return res.status(400),json({ error: 'name or number missing'})
+    return res.status(400).json({ error: 'name or number missing'})
   }
   const p = persons.find(p => p.name === req.body.name)
   if (p) {

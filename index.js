@@ -30,16 +30,10 @@ app.use(bodyParser.json())
 //app.use(morgan('tiny'))
 
 morgan.token('body', (req, res) => {
-  if (req.body.name !== undefined && req.body.number !== undefined) {
-    const name = JSON.stringify(req.body.name)
-    const number = JSON.stringify(req.body.number)
-    const body ='{"name":' + name + ',"number":' + number + '}'
-    return body
-  }
-//  return JSON.stringify(req.body) tulostaa myös id
+  return JSON.stringify(req.body)
 })
 
-const custMorgan = morgan( (tokens, req, res) =>{
+const customMorgan = morgan( (tokens, req, res) =>{
   return [
     tokens.method(req, res),
     tokens.url(req, res),
@@ -50,7 +44,7 @@ const custMorgan = morgan( (tokens, req, res) =>{
   ].join(' ')
 })
 
-app.use(custMorgan)
+app.use(customMorgan)
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World!</h1>')
@@ -74,17 +68,20 @@ app.post('/api/persons', (req, res) =>{
   if (req.body.name === undefined || req.body.number === undefined) {
     return res.status(400),json({ error: 'content missing'})
   }
-  //console.log(req.body)
-  const person = req.body
-  if (person.name === '' || person.number === '') {
+  if (req.body.name === '' || req.body.number === '') {
     return res.status(400),json({ error: 'name or number missing'})
   }
-  const p = persons.find(p => p.name === person.name)
+  const p = persons.find(p => p.name === req.body.name)
   if (p) {
       return res.status(400).json({ error: 'name must be unique'})
   }
   const newId = Math.floor(Math.random() * 9999999 + 10)
-  person.id = newId
+  
+  const person = {
+    name : req.body.name,
+    number: req.body.number,
+    id: newId
+  }
   persons.concat(person)
   res.status(201).json(person)
 })

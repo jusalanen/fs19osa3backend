@@ -64,7 +64,7 @@ app.get('/api/persons/:id', (req, res) => {
   }
 })
 
-app.post('/api/persons', (req, res) =>{
+app.post('/api/persons', (req, res) => {
   if (req.body.name === undefined || req.body.number === undefined) {
     return res.status(400).json({ error: 'content missing'})
   }
@@ -80,7 +80,7 @@ app.post('/api/persons', (req, res) =>{
   //Jos laittaa person = req.body ja lisää sitten personille id:n
   //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon)
   //tällä tavalla logaus toimii
-  
+
   const person = {
     name : req.body.name,
     number: req.body.number,

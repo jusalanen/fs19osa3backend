@@ -77,6 +77,10 @@ app.post('/api/persons', (req, res) =>{
   }
   const newId = Math.floor(Math.random() * 9999999 + 10)
   
+  //Jos laittaa person = req.body ja lisää sitten personille id:n
+  //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon)
+  //tällä tavalla logaus toimii
+  
   const person = {
     name : req.body.name,
     number: req.body.number,

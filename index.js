@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
 
 let persons =  [
   {
@@ -26,8 +27,8 @@ let persons =  [
   }
 ]
 
+app.use(cors())
 app.use(bodyParser.json())
-//app.use(morgan('tiny'))
 
 morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
@@ -40,7 +41,7 @@ const customMorgan = morgan( (tokens, req, res) => {
     tokens.status(req, res),
     tokens.res(req, res, 'content-length'), '-',
     tokens['response-time'](req, res), 'ms',
-    tokens['body'](req,res),
+    tokens['body'](req, res),
   ].join(' ')
 })
 
@@ -66,20 +67,20 @@ app.get('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   if (req.body.name === undefined || req.body.number === undefined) {
-    return res.status(400).json({ error: 'content missing'})
+    return res.status(400).json({ error: 'content missing' })
   }
   if (req.body.name === '' || req.body.number === '') {
-    return res.status(400).json({ error: 'name or number missing'})
+    return res.status(400).json({ error: 'name or number missing' })
   }
   const p = persons.find(p => p.name === req.body.name)
   if (p) {
-      return res.status(400).json({ error: 'name must be unique'})
+    return res.status(400).json({ error: 'name must be unique' })
   }
   const newId = Math.floor(Math.random() * 9999999 + 10)
   
   //Jos laittaa person = req.body ja lisää sitten personille id:n
-  //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon)
-  //tällä tavalla logaus toimii
+  //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon).
+  //Sen sijaan tällä tavalla logaus toimii
 
   const person = {
     name : req.body.name,
@@ -103,7 +104,7 @@ app.get('/info', (req, res) => {
   res.send(text)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

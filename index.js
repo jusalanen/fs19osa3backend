@@ -33,7 +33,7 @@ morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
 })
 
-const customMorgan = morgan( (tokens, req, res) =>{
+const customMorgan = morgan( (tokens, req, res) => {
   return [
     tokens.method(req, res),
     tokens.url(req, res),

@@ -80,7 +80,7 @@ app.post('/api/persons', (req, res) => {
   
   //Jos laittaa person = req.body ja lisää sitten personille id:n
   //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon).
-  //Sen sijaan tällä tavalla logaus toimii
+  //Sen sijaan tällä tavalla logaus toimii halutusti
 
   const person = {
     name : req.body.name,

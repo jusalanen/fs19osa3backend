@@ -29,6 +29,7 @@ let persons =  [
 
 app.use(cors())
 app.use(bodyParser.json())
+app.use(express.static('build'))
 
 morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
@@ -46,10 +47,6 @@ const customMorgan = morgan( (tokens, req, res) => {
 })
 
 app.use(customMorgan)
-
-app.get('/', (req, res) => {
-  res.send('<h1>Hello World!</h1>')
-})
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)

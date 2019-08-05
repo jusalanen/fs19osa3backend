@@ -1,2 +1,2 @@
-Puhelinluettelon osoite herokussa:
+Puhelinluettelon backendin osoite herokussa:
 https://fierce-stream-45909.herokuapp.com/api/persons/

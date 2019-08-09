@@ -8,7 +8,11 @@ const Person = mongoose.model('Person', {
 if (process.argv.length === 3) {
   const password = process.argv[2]
   const url = `mongodb+srv://fs19osa3:${password}@cluster0-bwk7l.mongodb.net/phonebook?retryWrites=true&w=majority`
-  mongoose.connect(url, { useNewUrlParser: true })
+  mongoose.connect(url, { useNewUrlParser: true }).then(
+    console.log('connecting to MongoDB')
+  ).catch( err => {
+    console.log(err.message)
+  })
 
   console.log('phonebook:')
   Person
@@ -21,7 +25,11 @@ if (process.argv.length === 3) {
 } else if (process.argv.length === 5) {
   const password = process.argv[2]
   const url = `mongodb+srv://fs19osa3:${password}@cluster0-bwk7l.mongodb.net/phonebook?retryWrites=true&w=majority`
-  mongoose.connect(url, { useNewUrlParser: true })
+  mongoose.connect(url, { useNewUrlParser: true }).then(
+    console.log('connecting to MongoDB')
+  ).catch( err => {
+    console.log(err.message)
+  })
 
   const name = process.argv[3]
   const number = process.argv[4]

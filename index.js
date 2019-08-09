@@ -79,20 +79,20 @@ app.post('/api/persons', (req, res) => {
   if (p) {
     return res.status(400).json({ error: 'name must be unique' })
   }
-  const newId = Math.floor(Math.random() * 9999999 + 10)
   
   //Jos laittaa person = req.body ja lisää sitten personille id:n
   //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon).
   //Sen sijaan tällä tavalla logaus toimii halutusti
 
-  const person = {
+  const person = new Person({
     name : req.body.name,
-    number: req.body.number,
-    id: newId
-  }
-  persons.concat(person)
-  res.status(201).json(person)
+    number: req.body.number
+  })
+  person.save().then( savedPerson => {
+    res.status(201).json(savedPerson.toJSON())
+  })
 })
+  
 
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)

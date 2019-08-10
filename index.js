@@ -95,9 +95,13 @@ app.post('/api/persons', (req, res) => {
   
 
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+  Person.findByIdAndRemove(req.params.id).then( result => {
+    console.log(result)
+    res.status(204).end()
+  }).catch( err => {
+    console.log(err.message)
+    res.status(400).json({ error: 'bad id' })
+  })
 })
 
 app.get('/info', (req, res) => {

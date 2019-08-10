@@ -30,8 +30,8 @@ let persons =  [
 ]*/
 
 app.use(cors())
-app.use(bodyParser.json())
 app.use(express.static('build'))
+app.use(bodyParser.json())
 
 morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
@@ -60,12 +60,16 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  Person.findById(id).then( person => {
+    if (person) {
+      res.json(person)
+    } else {
+      res.status(404).end()
+    }
+  }).catch( err => {
+    console.log(err.message)
+    res.status(400).send({ error: 'malformatted id' })
+  })  
 })
 
 app.post('/api/persons', (req, res) => {
@@ -91,13 +95,16 @@ app.post('/api/persons', (req, res) => {
   person.save().then( savedPerson => {
     res.status(201).json(savedPerson.toJSON())
   })
-})
-  
+})  
 
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+  Person.findByIdAndRemove(req.params.id).then( result => {
+    console.log(result)
+    res.status(204).end()
+  }).catch( err => {
+    console.log(err.message)
+    res.status(400).json({ error: 'bad id' })
+  })
 })
 
 app.get('/info', (req, res) => {

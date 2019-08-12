@@ -59,8 +59,7 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  Person.findById(id).then( person => {
+  Person.findById(req.params.id).then( person => {
     if (person) {
       res.json(person)
     } else {
@@ -95,11 +94,7 @@ app.post('/api/persons', (req, res) => {
   person.save().then( savedPerson => {
     res.status(201).json(savedPerson.toJSON())
   })
-<<<<<<< Updated upstream
 })  
-=======
-})
->>>>>>> Stashed changes
 
 app.delete('/api/persons/:id', (req, res) => {
   Person.findByIdAndRemove(req.params.id).then( result => {

@@ -95,12 +95,20 @@ app.post('/api/persons', (req, res) => {
   person.save().then( savedPerson => {
     res.status(201).json(savedPerson.toJSON())
   })
+<<<<<<< Updated upstream
 })  
+=======
+})
+>>>>>>> Stashed changes
 
 app.delete('/api/persons/:id', (req, res) => {
   Person.findByIdAndRemove(req.params.id).then( result => {
-    console.log(result)
-    res.status(204).end()
+    if (result) {
+      console.log(result)
+      res.status(204).end()
+    } else {
+      res.status(404).json({ error: 'person already removed from server' })
+    }    
   }).catch( err => {
     console.log(err.message)
     res.status(400).json({ error: 'bad id' })

@@ -102,6 +102,20 @@ app.delete('/api/persons/:id', (req, res, next) => {
   }).catch( err => next(err))
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+  
+  const person = {
+    name: req.body.name,
+    number: req.body.number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, person)
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON())
+    })
+    .catch(error => next(error))
+})
+
 app.get('/info', (req, res, next) => {
   Person.find({}).then(persons => {
     const size = persons.length

@@ -50,25 +50,20 @@ const customMorgan = morgan( (tokens, req, res) => {
 
 app.use(customMorgan)
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (req, res, next) => {
   Person.find({}).then(persons => {
     res.json(persons.map(person => person.toJSON()))
-  }).catch( err => {
-    console.log(err.message)
-  })
+  }).catch( err => next(err))
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id).then( person => {
     if (person) {
       res.json(person)
     } else {
       res.status(404).end()
     }
-  }).catch( err => {
-    console.log(err.message)
-    res.status(400).send({ error: 'malformatted id' })
-  })  
+  }).catch( err => next(err))  
 })
 
 app.post('/api/persons', (req, res) => {
@@ -78,11 +73,7 @@ app.post('/api/persons', (req, res) => {
   if (req.body.name === '' || req.body.number === '') {
     return res.status(400).json({ error: 'name or number missing' })
   }
-/*  const p = persons.find(p => p.name === req.body.name)
-  if (p) {
-    return res.status(400).json({ error: 'name must be unique' })
-  }*/
-  
+
   //Jos laittaa person = req.body ja lisää sitten personille id:n
   //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon).
   //Sen sijaan tällä tavalla logaus toimii halutusti
@@ -93,33 +84,68 @@ app.post('/api/persons', (req, res) => {
   })
   person.save().then( savedPerson => {
     res.status(201).json(savedPerson.toJSON())
-  })
+  }).catch( err => next(err))
 })  
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id).then( result => {
-    if (result) {
-      console.log(result)
-      res.status(204).end()
+    console.log(result)   
+    res.status(204).end()   
+  }).catch( err => next(err))
+})
+
+app.put('/api/persons/:id', (req, res, next) => {
+  
+  const inputPerson = {
+    name: req.body.name,
+    number: req.body.number,
+  }
+
+  Person.findByIdAndUpdate(req.params.id, inputPerson).then(  updPers => {
+    if (updPers) {
+      res.json(updPers.toJSON())
     } else {
-      res.status(404).json({ error: 'person already removed from server' })
-    }    
-  }).catch( err => {
-    console.log(err.message)
-    res.status(400).json({ error: 'bad id' })
+      const newPerson = new Person(inputPerson)
+      newPerson.save().then( savedPerson => {
+        res.json(savedPerson.toJSON())
+      })
+    }  
+  }).catch(error => {
+    console.log(error)
+    next(error)
   })
 })
 
-app.get('/info', (req, res) => {
+app.get('/info', (req, res, next) => {
   Person.find({}).then(persons => {
     const size = persons.length
     const now = new Date
     const text = "Phonebook has info for " + size + " people <br><br>" + now
     res.send(text)
-  })
+  }).catch( err => next(err))
 })
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
+
+
 const PORT = process.env.PORT
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

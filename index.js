@@ -73,11 +73,7 @@ app.post('/api/persons', (req, res) => {
   if (req.body.name === '' || req.body.number === '') {
     return res.status(400).json({ error: 'name or number missing' })
   }
-/*  const p = persons.find(p => p.name === req.body.name)
-  if (p) {
-    return res.status(400).json({ error: 'name must be unique' })
-  }*/
-  
+
   //Jos laittaa person = req.body ja lisää sitten personille id:n
   //tulee id mukaan logatessa req.body (ilm. person-olio viittaa req.body-olioon).
   //Sen sijaan tällä tavalla logaus toimii halutusti

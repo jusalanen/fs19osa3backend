@@ -93,27 +93,31 @@ app.post('/api/persons', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id).then( result => {
-    console.log(result)
-    if (result === null) {
-      res.status(404).json({ error: 'person already removed from server' })
-    } else {
-      res.status(204).end()
-    }    
+    console.log(result)   
+    res.status(204).end()   
   }).catch( err => next(err))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
   
-  const person = {
+  const inputPerson = {
     name: req.body.name,
     number: req.body.number,
   }
 
-  Person.findByIdAndUpdate(req.params.id, person)
-    .then(updatedPerson => {
-      res.json(updatedPerson.toJSON())
-    })
-    .catch(error => next(error))
+  Person.findByIdAndUpdate(req.params.id, inputPerson).then(  updPers => {
+    if (updPers) {
+      res.json(updPers.toJSON())
+    } else {
+      const newPerson = new Person(inputPerson)
+      newPerson.save().then( savedPerson => {
+        res.json(savedPerson.toJSON())
+      })
+    }  
+  }).catch(error => {
+    console.log(error)
+    next(error)
+  })
 })
 
 app.get('/info', (req, res, next) => {

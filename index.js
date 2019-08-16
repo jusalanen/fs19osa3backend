@@ -66,7 +66,7 @@ app.get('/api/persons/:id', (req, res, next) => {
   }).catch( err => next(err))  
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   if (req.body.name === undefined || req.body.number === undefined) {
     return res.status(400).json({ error: 'content missing' })
   }
@@ -91,7 +91,10 @@ app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id).then( result => {
     console.log(result)   
     res.status(204).end()   
-  }).catch( err => next(err))
+  }).catch( err => {
+    console.log(err)
+    next(err)
+  })
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
@@ -135,8 +138,10 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } 
+    return response.status(400).json({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }

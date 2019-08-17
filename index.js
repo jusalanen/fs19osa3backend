@@ -83,7 +83,9 @@ app.post('/api/persons', (req, res, next) => {
     number: req.body.number
   })
   person.save().then( savedPerson => {
-    res.status(201).json(savedPerson.toJSON())
+    if (savedPerson) {
+      res.status(201).json(savedPerson.toJSON())
+    }
   }).catch( err => next(err))
 })  
 
@@ -104,7 +106,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: req.body.number,
   }
 
-  Person.findByIdAndUpdate(req.params.id, inputPerson).then(  updPers => {
+  Person.findByIdAndUpdate(req.params.id, inputPerson).then( updPers => {
     if (updPers) {
       res.json(updPers.toJSON())
     } else {
@@ -138,7 +140,9 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
-    return response.status(400).json({ error: 'malformatted id' })
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'MongoError' && error.code === 11000) {
+    return response.status(400).json({ error: error.message })
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }

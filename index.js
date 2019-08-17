@@ -140,17 +140,11 @@ const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
-<<<<<<< Updated upstream
-    return response.status(400).json({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
-=======
-    console.log(error)
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'MongoError' && error.code === 11000) {
-    console.log(error)
-    return response.status(400).json({ error: 'name must be unique' })
->>>>>>> Stashed changes
+    return response.status(400).json({ error: error.message })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)

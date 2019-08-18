@@ -33,7 +33,7 @@ app.use(cors())
 app.use(express.static('build'))
 app.use(bodyParser.json())
 
-morgan.token('body', (req, res) => {
+morgan.token('body', (req) => {
   return JSON.stringify(req.body)
 })
 
@@ -63,7 +63,7 @@ app.get('/api/persons/:id', (req, res, next) => {
     } else {
       res.status(404).end()
     }
-  }).catch( err => next(err))  
+  }).catch( err => next(err))
 })
 
 app.post('/api/persons', (req, res, next) => {
@@ -87,12 +87,12 @@ app.post('/api/persons', (req, res, next) => {
       res.status(201).json(savedPerson.toJSON())
     }
   }).catch( err => next(err))
-})  
+})
 
 app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndRemove(req.params.id).then( result => {
-    console.log(result)   
-    res.status(204).end()   
+    console.log(result)
+    res.status(204).end()
   }).catch( err => {
     console.log(err)
     next(err)
@@ -100,7 +100,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
-  
+
   const inputPerson = {
     name: req.body.name,
     number: req.body.number,
@@ -114,7 +114,7 @@ app.put('/api/persons/:id', (req, res, next) => {
       newPerson.save().then( savedPerson => {
         res.json(savedPerson.toJSON())
       })
-    }  
+    }
   }).catch(error => {
     console.log(error)
     next(error)
@@ -125,7 +125,7 @@ app.get('/info', (req, res, next) => {
   Person.find({}).then(persons => {
     const size = persons.length
     const now = new Date
-    const text = "Phonebook has info for " + size + " people <br><br>" + now
+    const text = 'Phonebook has info for ' + size + ' people <br><br>' + now
     res.send(text)
   }).catch( err => next(err))
 })
@@ -139,7 +139,7 @@ app.use(unknownEndpoint)
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
-  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'MongoError' && error.code === 11000) {
     return response.status(400).json({ error: error.message })
